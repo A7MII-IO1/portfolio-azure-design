@@ -11,11 +11,12 @@ rg-azure
 vnet-azure
   - Address Space = 192.168.0.0/16
   - Subnet
+    - GatewaySubnet (192.168.0.0/24)
     - subnet-web(192.168.1.0/24)
     - subnet-app (192.168.2.0/24)
     - subnet-data (192.168.3.0)
     - subnet-mgmt (192.168.4.0/24)
-    - subnet-gw (192.168.5.0/24)
+  - DNS Servers = 10.0.1.1
 </pre>
   
 #### 3. Web Zone
@@ -51,7 +52,16 @@ vnet-azure
               - Service = Custom (TCP/50002)
               - Target = vmss-web (Instance 1)(3389)
 
-3.3 Virtual Machine Scale Set
+3.3 DNS Zone
+      chetniphat.co
+      - Region = Southeast Asia
+      - Record Set
+      - chetniphat.co
+        - Name = www
+        - Type = A
+        - IP Address = <public-ip-web>
+
+3.4 Virtual Machine Scale Set
       vmss-web
         - OS disk image = WINS2019WEBIMAGE
         - Username = azureadmin
@@ -67,7 +77,7 @@ vnet-azure
             - Maximum = 2
             - Default = 0
 
-3.4 Virtual Machine
+3.5 Virtual Machine
       VM-WEB1
         - Size = Standard DS1 v2
         - Image = image-wins2019-iis
@@ -180,10 +190,10 @@ vnet-azure
           - Destination = [Load balancer public ip]
           - Service = Custom (TCP/50002)
           - Target = VM-DB2 (3389)
-          - rdp-share
-            - Destination = [Load balancer public ip]
-            - Service = Custom (TCP/50003)
-            - Target = VM-SHARE (3389)
+        - rdp-share
+          - Destination = [Load balancer public ip]
+          - Service = Custom (TCP/50003)
+          - Target = VM-SHARE (3389)
 
 5.3 Availability Set
       as-data
@@ -193,8 +203,19 @@ vnet-azure
         - VM-DB1
         - VM-DB2
         - VM-SHARE
+
+5.4 Storage Account
+sa-azure
+- Performance = Premium
+- Account Kind = StorageV2 (general purpose v2)
+- Replication = LRS
+- File Shares
+  - Name = Report 2025
+  - Quota = 1000GiB
+  - Connect = VM-SHARE
+  - Drive Letter = Z
   
-5.4 Virtual Machine
+5.5 Virtual Machine
       VM-DB1
         - Size = Standard DS1 v2
         - Availability Set = as-data
@@ -216,4 +237,65 @@ vnet-azure
         - OS Disk = Premium SSD
         - Virtual Network = vnet-azure
         - Subnet = subnet-data
+</pre>
+
+#### 6. Management Zone
+<pre>
+6.1 Network Security Group
+      nsg-mgmt
+      - Inbound Security Rules
+        - RDP (3389)
+      - Associate Subnet = subnet-mgmt
+
+6.2 Virtual Machine
+      VM-DC2
+        - Size = Standard DS1 v2
+        - Image = Window Server 2019
+        - OS Disk = Premium SSD
+        - Virtual Network = vnet-azure
+        - Subnet = subnet-mgmt
+        - Domain = corp.internal
+</pre>
+
+#### 7. Site-to-Site VPN
+<pre>
+7.1 Virtual network gateway
+      azure-nw-gw
+      - Virtual network = azure-vnet
+      - Subnet = GatewaySubnet (192.168.0.0/24)
+      - Public IP address name = azure-vnet-gw-public-ip
+
+7.2 Local network gateway
+      local-nw-gw
+      - IP address = [local server public ip]
+      - Address space = 10.0.0.0/16
+
+7.3 Connection
+      vpn-azure-to-local
+      - Connection Type = Site-to-site (IPSec)
+      - Virtual network gateway = azure-nw-gw
+      - Local network gateway = local-nw-gw
+      - Preshared Key (PSK) = 1234
+      - IKE Protocol = IKEv2
+</pre>
+
+#### 8. On-Premise
+<pre>
+8.1 Routing and Remote Access Service (RRAS)
+      vpn-local-to-azure
+      - Connection Type = VPN
+      - VPN Type = KEv2
+      - Destination Address = [Virtual network gateway public ip]
+      - Protocol and Security = Route IP packets on this interface
+      - Static Route
+        - Destination = 192.168.0.0
+        - Mask =  255.255.0.0
+        - Metric = 10
+      - Dial-Out Credentials
+        - User name: azure
+      - Preshared Key (PSK) = 1234
+
+8.2 Virtual Machine
+      VM-DC1
+      - Domain = corp.internal
 </pre>
