@@ -1,5 +1,7 @@
 # portfolio-azure-design
 
+![คำอธิบายรูป](https://github.com/A7MII-IO1/portfolio-azure-design/blob/c9efe15f1673cf6ec93983a7cfdbed7860e993b7/diagram.png)
+
 #### 1. Resource Group
 <pre>
 rg-azure
