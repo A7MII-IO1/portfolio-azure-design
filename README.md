@@ -5,7 +5,7 @@
 #### 1. Resource Group
 <pre>
 rg-azure
-  - Region = Southeast Asia
+  - Region = (Asia Pacific) Southeast Asia
 </pre>
 
 #### 2. Virtual Network
