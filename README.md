@@ -2,6 +2,7 @@
 ![Azure](https://img.shields.io/badge/Azure-Cloud-blue?logo=microsoft-azure)
 ![OpenAI](https://img.shields.io/badge/OpenAI-ChatGPT_4-10a37f?logo=openai&logoColor=white)
 ![Notion](https://img.shields.io/badge/Notion-Workspace-000000?logo=notion&logoColor=white)
+![draw.io](https://img.shields.io/badge/draw.io-diagram_tool-ff9900)
 
 ![Architecture Diagram](https://github.com/A7MII-IO1/portfolio-azure-design/blob/c9efe15f1673cf6ec93983a7cfdbed7860e993b7/diagram.png)
 
