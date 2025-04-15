@@ -4,6 +4,8 @@
 ![Notion](https://img.shields.io/badge/Notion-Workspace-000000?logo=notion&logoColor=white)
 ![draw.io](https://img.shields.io/badge/draw.io-diagram_tool-ff9900)
 
+This repository contains a comprehensive Azure landing zone design based on the Hub-and-Spoke architecture model. It demonstrates network segmentation, high availability, and secure connectivity between cloud and on-premise environments, leveraging core Azure services such as Virtual Network, NSG, Load Balancer, VM Scale Set, and Site-to-Site VPN.
+
 ![Architecture Diagram](https://github.com/A7MII-IO1/portfolio-azure-design/blob/c9efe15f1673cf6ec93983a7cfdbed7860e993b7/diagram.png)
 
 ---
