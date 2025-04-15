@@ -61,7 +61,7 @@ vnet-azure
       - chetniphat.co
         - Name = www
         - Type = A
-        - IP Address = <public-ip-web>
+        - IP Address = [public-ip-web]
 
 3.4 Virtual Machine Scale Set
       vmss-web
