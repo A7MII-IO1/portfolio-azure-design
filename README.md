@@ -1,303 +1,242 @@
-# portfolio-azure-design
+# 🏗️ Azure Architecture Design
 
-![คำอธิบายรูป](https://github.com/A7MII-IO1/portfolio-azure-design/blob/c9efe15f1673cf6ec93983a7cfdbed7860e993b7/diagram.png)
+![Architecture Diagram](https://github.com/A7MII-IO1/portfolio-azure-design/blob/c9efe15f1673cf6ec93983a7cfdbed7860e993b7/diagram.png)
 
-#### 1. Resource Group
-<pre>
-rg-azure
-  - Region = (Asia Pacific) Southeast Asia
-</pre>
+---
 
-#### 2. Virtual Network
-<pre>
-vnet-azure
-  - Address Space = 192.168.0.0/16
-  - Subnet
-    - GatewaySubnet (192.168.0.0/24)
-    - subnet-web(192.168.1.0/24)
-    - subnet-app (192.168.2.0/24)
-    - subnet-data (192.168.3.0)
-    - subnet-mgmt (192.168.4.0/24)
-  - DNS Servers = 10.0.1.1
-</pre>
-  
-#### 3. Web Zone
-<pre>
-3.1 Network Security Group
-      nsg-web
-        - Inbound Security Rules
-          - HTTP (80)
-          - HTTPS (443)
-          - RDP (3389)
-            - Source = 192.168.4.0/24
-        - Associate Subnet = subnet-web
+## 📚 Table of Contents
 
-3.2 Load Balancer
-      lb-vmss-web
-        - Type = public
-        - Public IP address name = public-ip-web
-        - Assignment = Static
-        - Domain Name Label = autoscaleweb
-        - Virtual Network = vnet-azure
-        - Subnet = subnet-web
-        - Backend pools
-          - vmss-web (Instance 0) = VM-WEB1 (192.168.1.4)
-          - vmss-web (Instance 1) = VM-WEB2 (192.168.1.5)
-        - Health probes = tcp-probe (80)
-        - Inbound NAT rules
-            - rdp-web1
-              - Destination = [Load balancer public ip]
-              - Service = Custom (TCP/50001)
-              - Target = vmss-web (Instance 0)(3389)
-            - rdp-web2
-              - Destination = [Load balancer public ip]
-              - Service = Custom (TCP/50002)
-              - Target = vmss-web (Instance 1)(3389)
+1. [Resource Group](#1️⃣-resource-group)
+2. [Virtual Network](#2️⃣-virtual-network)
+3. [Web Zone](#3️⃣-web-zone)
+4. [App Zone](#4️⃣-app-zone)
+5. [Data Zone](#5️⃣-data-zone)
+6. [Management Zone](#6️⃣-management-zone)
+7. [Site-to-Site VPN](#7️⃣-site-to-site-vpn)
+8. [On-Premise](#8️⃣-on-premise)
 
-3.3 DNS Zone
-      chetniphat.co
-      - Region = Southeast Asia
-      - Record Set
-      - chetniphat.co
-        - Name = www
-        - Type = A
-        - IP Address = [public-ip-web]
+---
 
-3.4 Virtual Machine Scale Set
-      vmss-web
-        - OS disk image = WINS2019WEBIMAGE
-        - Username = azureadmin
-        - Password = Password1234
-        - Instance count = 2
-        - Scaling
-          - Scale mode = Scale based on a metric
-          - Rules
-            - Scale out = Percentage CPU > 70 (average)
-            - Scale In = Percentage CPU < 70 (average)
-          - Instance limits
-            - Minimun = 1
-            - Maximum = 2
-            - Default = 0
+## 1️⃣ Resource Group
+`Name: rg-azure`
+```text
+  - Region: Asia Pacific (Southeast Asia)
+```
 
-3.5 Virtual Machine
-      VM-WEB1
-        - Size = Standard DS1 v2
-        - Image = image-wins2019-iis
-        - OS Disk = Premium SSD
-        - Virtual Network = vnet-azure
-        - Subnet = subnet-web
-      VM-WEB2
-        - Size = Standard DS1 v2
-        - Image = image-wins2019-iis
-        - OS Disk = Premium SSD
-        - Virtual Network = vnet-azure
-        - Subnet = subnet-web
-</pre>
+## 2️⃣ Virtual Network
+`Name: vnet-azure`
+```text
+  - Address Space: 192.168.0.0/16
+  - Subnets:
+    • GatewaySubnet (192.168.0.0/24)
+    • subnet-web (192.168.1.0/24)
+    • subnet-app (192.168.2.0/24)
+    • subnet-data (192.168.3.0/24)
+    • subnet-mgmt (192.168.4.0/24)
+  - DNS Servers: 10.0.1.1
+```
 
-#### 4. App Zone
-<pre>
-4.1 Network Security Group
-      nsg-app
-        - Inbound Security Rules
-          - RDP (3389)
-            - Source = 192.168.4.0/24
-        - Associate Subnet = subnet-app
+## 3️⃣ Web Zone
+### 🔐 3.1 Network Security Group
+`Name: nsg-web`
+```text
+- Inbound Rules:
+  • HTTP (80)
+  • HTTPS (443)
+- Associated Subnet: subnet-web
+```
 
-4.2 Load Balancer
-      lb-vm-app
-        - Region = Southeast Asia
-        - Type = Internal
-        - Virtual Network = vnet-azure
-        - Subnet = subnet-app
-        - Backend pools
-          - VM-APP1 (192.168.2.4)
-          - VM-APP2 (192.168.2.5)
-          - VM-APP3 (192.168.2.6)
-        - Health probes = tcp-probe [app port]
-        - Inbound NAT rules
-          - rdp-app1
-            - Destination = [Load balancer public ip]
-            - Service = Custom (TCP/50001)
-            - Target = VM-APP1 (3389)
-          - rdp-app2
-            - Destination = [Load balancer public ip]
-            - Service = Custom (TCP/50002)
-            - Target = VM-APP2 (3389)
-          - rdp-app3
-            - Destination = [Load balancer public ip]
-            - Service = Custom (TCP/50003)
-            - Target = VM-APP3 (3389)
+### 🌐 3.2 Load Balancer
+`Name: lb-vmss-web`
+```text
+- Type: Public (Static IP)
+- DNS Label: autoscaleweb
+- Subnet: subnet-web
+- Backend Pool:
+  • VM-WEB1 (192.168.1.4)
+  • VM-WEB2 (192.168.1.5)
+- Health Probe: TCP on port 80
+- NAT Rules:
+  • rdp-web1 → TCP/50001 → VM-WEB1 (3389)
+  • rdp-web2 → TCP/50002 → VM-WEB2 (3389)
+```
 
-4.3 Availability Set
-      as-app
-      - Fault Domain = 2
-      - Update Domain = 5
-      - Virtual Machine
-        - VM-APP1
-        - VM-APP2
-        - VM-APP3
+### 🧭 3.3 DNS Zone
+`Name: chetniphat.co`
+```text
+- Region: Southeast Asia
+- Record Set: www.chetniphat.co → [public-ip-web]
+```
 
-4.4 Virtual Machine
-      VM-APP1
-        - Size = Standard DS1 v2
-        - Availability Set = as-app
-        - Image = Window Server 2019
-        - OS Disk = Premium SSD
-        - Virtual Network = vnet-azure
-        - Subnet = subnet-app
-      VM-APP2
-        - Size = Standard DS1 v2
-        - Availability Set = as-app
-        - Image = Window Server 2019
-        - OS Disk = Premium SSD
-        - Virtual Network = vnet-azure
-        - Subnet = subnet-app
-      VM-APP3
-        - Size = Standard DS1 v2
-        - Availability Set = as-app
-        - Image = Window Server 2019
-        - OS Disk = Premium SSD
-        - Virtual Network = vnet-azure
-        - Subnet = subnet-app
-</pre>
+### ⚙️ 3.4 Virtual Machine Scale Set
+`Name: vmss-web`
+```text
+- Image: WINS2019WEBIMAGE
+- Username: azureadmin
+- Password: Password1234
+- Instance Count: 2
+- Scaling Rules:
+  • Scale Out: CPU > 70%
+  • Scale In: CPU < 70%
+- Limits: min=1, max=2, default=0
+```
 
-#### 5. Data Zone
-<pre>
-5.1 Network Security Group
-      nsg-data
-      - Inbound security rules
-        - SQL (1433)
-          - Source = 192.168.2.0/24
-        - RDP (3389)
-          - Source = 192.168.4.0/24
-      - Associate Subnet = subnet-data
+### 💻 3.5 Virtual Machines
+`Name: VM-WEB1 & VM-WEB2`
+```text
+- Size: Standard DS1 v2
+- Image: image-wins2019-iis
+- OS Disk: Premium SSD
+- Subnet: subnet-web
+```
 
-5.2 Load Balancer
-      lb-vm-data
-      - Region = Southeast Asia
-      - Type = Internal
-      - Virtual Network = vnet-azure
-      - Subnet = subnet-data
-      - Backend pools
-        - VM-DB1 (192.168.3.4)
-        - VM-DB2 (192.168.3.5)
-        - VM-SHARE (192.168.3.6)
-      - Health probes = tcp-probe (1433)
-      - Inbound NAT rules
-        - rdp-db1
-          - Destination = [Load balancer public ip]
-          - Service = Custom (TCP/50001)
-          - Target = VM-DB1 (3389)
-        - rdp-db2
-          - Destination = [Load balancer public ip]
-          - Service = Custom (TCP/50002)
-          - Target = VM-DB2 (3389)
-        - rdp-share
-          - Destination = [Load balancer public ip]
-          - Service = Custom (TCP/50003)
-          - Target = VM-SHARE (3389)
+## 4️⃣ App Zone
+### 🔐 4.1 Network Security Group
+`Name: nsg-app`
+```text
+- Subnet: subnet-app
+```
 
-5.3 Availability Set
-      as-data
-      - Fault Domain = 2
-      - Update Domain = 5
-      - Virtual Machine
-        - VM-DB1
-        - VM-DB2
-        - VM-SHARE
+### 🌐 4.2 Load Balancer
+`Name: lb-vm-app`
+```text
+- Type: Internal
+- Subnet: subnet-app
+- Backend Pool:
+  • VM-APP1, VM-APP2, VM-APP3
+- Health Probe: TCP on app port
+```
 
-5.4 Storage Account
-sa-azure
-- Performance = Premium
-- Account Kind = StorageV2 (general purpose v2)
-- Replication = LRS
-- File Shares
-  - Name = Report 2025
-  - Quota = 1000GiB
-  - Connect = VM-SHARE
-  - Drive Letter = Z
-  
-5.5 Virtual Machine
-      VM-DB1
-        - Size = Standard DS1 v2
-        - Availability Set = as-data
-        - Image = Window Server 2019
-        - OS Disk = Premium SSD
-        - Virtual Network = vnet-azure
-        - Subnet = subnet-data
-      VM-DB2
-        - Size = Standard DS1 v2
-        - Availability Set = as-data
-        - Image = Window Server 2019
-        - OS Disk = Premium SSD
-        - Virtual Network = vnet-azure
-        - Subnet = subnet-data
-      VM-SHARE
-        - Size = Standard DS1 v2
-        - Availability Set = as-data
-        - Image = Window Server 2019
-        - OS Disk = Premium SSD
-        - Virtual Network = vnet-azure
-        - Subnet = subnet-data
-</pre>
+### 🧱 4.3 Availability Set
+`Name: as-app`
+```text
+- Fault Domains: 2
+- Update Domains: 5
+- VMs: VM-APP1, VM-APP2, VM-APP3
+```
 
-#### 6. Management Zone
-<pre>
-6.1 Network Security Group
-      nsg-mgmt
-      - Inbound Security Rules
-        - RDP (3389)
-      - Associate Subnet = subnet-mgmt
+### 💻 4.4 Virtual Machines
+`Name: VM-APP1, VM-APP2 & VM-APP3`
+```text
+- Image: Windows Server 2019
+- Size: Standard DS1 v2
+- OS Disk: Premium SSD
+- Subnet: subnet-app
+- Availability Set: as-app
+```
 
-6.2 Virtual Machine
-      VM-DC2
-        - Size = Standard DS1 v2
-        - Image = Window Server 2019
-        - OS Disk = Premium SSD
-        - Virtual Network = vnet-azure
-        - Subnet = subnet-mgmt
-        - Domain = corp.internal
-</pre>
+## 5️⃣ Data Zone
+### 🔐 5.1 Network Security Group
+`Name: nsg-data`
+```text
+- Allow SQL (1433) from 192.168.2.0/24
+- Subnet: subnet-data
+```
 
-#### 7. Site-to-Site VPN
-<pre>
-7.1 Virtual network gateway
-      azure-nw-gw
-      - Virtual network = azure-vnet
-      - Subnet = GatewaySubnet (192.168.0.0/24)
-      - Public IP address name = azure-vnet-gw-public-ip
+### 🌐 5.2 Load Balancer
+`Name: lb-vm-data`
+```text
+- Type: Internal
+- Subnet: subnet-data
+- Backend Pool:
+  • VM-DB1, VM-DB2, VM-SHARE
+- Health Probe: TCP (1433)
+```
 
-7.2 Local network gateway
-      local-nw-gw
-      - IP address = [local server public ip]
-      - Address space = 10.0.0.0/16
+### 🧱 5.3 Availability Set
+`Name: as-data`
+```text
+- Fault Domains: 2
+- Update Domains: 5
+- VMs: VM-DB1, VM-DB2, VM-SHARE
+```
 
-7.3 Connection
-      vpn-azure-to-local
-      - Connection Type = Site-to-site (IPSec)
-      - Virtual network gateway = azure-nw-gw
-      - Local network gateway = local-nw-gw
-      - Preshared Key (PSK) = 1234
-      - IKE Protocol = IKEv2
-</pre>
+### 📦 5.4 Storage Account
+`Name: sa-azure`
+```text
+- Performance: Premium
+- Kind: StorageV2
+- Replication: LRS
+- File Share: Report 2025
+  • Quota: 1000 GiB
+  • Connected to VM-SHARE (Z: Drive)
+```
 
-#### 8. On-Premise
-<pre>
-8.1 Routing and Remote Access Service (RRAS)
-      vpn-local-to-azure
-      - Connection Type = VPN
-      - VPN Type = KEv2
-      - Destination Address = [Virtual network gateway public ip]
-      - Protocol and Security = Route IP packets on this interface
-      - Static Route
-        - Destination = 192.168.0.0
-        - Mask =  255.255.0.0
-        - Metric = 10
-      - Dial-Out Credentials
-        - User name: azure
-      - Preshared Key (PSK) = 1234
+### 💻 5.5 Virtual Machines
+`Name: VM-DB1, VM-DB2 & VM-SHARE`
+```text
+- Image: Windows Server 2019
+- Size: Standard DS1 v2
+- OS Disk: Premium SSD
+- Subnet: subnet-data
+- Availability Set: as-data
+```
 
-8.2 Virtual Machine
-      VM-DC1
-      - Domain = corp.internal
-</pre>
+## 6️⃣ Management Zone
+### 🔐 6.1 Network Security Group
+`Name: nsg-mgmt`
+```text
+- Subnet: subnet-mgmt
+```
+
+### 💻 6.2 Virtual Machine
+`Name: VM-DC2`
+```text
+- Image: Windows Server 2019
+- Size: Standard DS1 v2
+- Subnet: subnet-mgmt
+- Domain: corp.internal
+```
+
+## 7️⃣ Site-to-Site VPN
+### 🌐 7.1 Virtual Network Gateway
+`Name: azure-nw-gw`
+```text
+- Subnet: GatewaySubnet (192.168.0.0/24)
+- Public IP: azure-vnet-gw-public-ip
+```
+
+### 🌐 7.2 Local Network Gateway
+`Name: local-nw-gw`
+```text
+- IP Address: [local public IP]
+- Address Space: 10.0.0.0/16
+```
+
+### 🔗 7.3 VPN Connection
+`Name: vpn-azure-to-local`
+```text
+- Type: Site-to-Site (IPSec)
+- Gateway: azure-nw-gw
+- Local Gateway: local-nw-gw
+- PSK: 1234
+- IKE Protocol: IKEv2
+```
+
+## 8️⃣ On-Premise
+### 🧩 8.1 RRAS VPN
+`Name: vpn-local-to-azure`
+```text
+- Type: VPN (IKEv2)
+- Destination: [Azure VPN public IP]
+- Static Route:
+  • Destination: 192.168.0.0
+  • Mask: 255.255.0.0
+  • Metric: 10
+- Dial-Out:
+  • Username: azure
+  • PSK: 1234
+```
+
+### 💻 8.2 Virtual Machine
+`Name: VM-DC1`
+```text
+- Domain: corp.internal
+```
+
+---
+
+## 👨‍💻 Maintainer
+
+**Chetniphat Varasai**  
+Cloud Engineer  
