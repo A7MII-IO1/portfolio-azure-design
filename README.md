@@ -77,7 +77,7 @@ This repository contains a comprehensive Azure landing zone design based on the 
 ### 3.4 Virtual Machine Scale Set
 `Name: vmss-web`
 ```text
-- Image: WINS2019WEBIMAGE
+- Image: image-wins2019-iis
 - Username: azureadmin
 - Password: Password1234
 - Instance Count: 2
