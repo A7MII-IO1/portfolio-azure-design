@@ -1,4 +1,4 @@
-# Azure Architecture Design
+# 🏗️ Azure Architecture Design
 ![Azure](https://img.shields.io/badge/Azure-Cloud-blue?logo=microsoft-azure)
 ![OpenAI](https://img.shields.io/badge/OpenAI-ChatGPT_4-10a37f?logo=openai&logoColor=white)
 ![Notion](https://img.shields.io/badge/Notion-Workspace-000000?logo=notion&logoColor=white)
@@ -10,7 +10,7 @@ This repository contains a comprehensive Azure landing zone design based on the 
 
 ---
 
-## Table of Contents
+## 📚 Table of Contents
 
 1. [Resource Group](#1️⃣-resource-group)
 2. [Virtual Network](#2️⃣-virtual-network)
@@ -23,13 +23,13 @@ This repository contains a comprehensive Azure landing zone design based on the 
 
 ---
 
-## Resource Group
+## 1️⃣ Resource Group
 `Name: rg-azure`
 ```text
   - Region: Asia Pacific (Southeast Asia)
 ```
 
-## Virtual Network
+## 2️⃣ Virtual Network
 `Name: vnet-azure`
 ```text
   - Address Space: 192.168.0.0/16
@@ -42,7 +42,7 @@ This repository contains a comprehensive Azure landing zone design based on the 
   - DNS Servers: 10.0.1.1
 ```
 
-## Web Zone
+## 3️⃣ Web Zone
 ### 3.1 Network Security Group
 `Name: nsg-web`
 ```text
@@ -96,7 +96,7 @@ This repository contains a comprehensive Azure landing zone design based on the 
 - Subnet: subnet-web
 ```
 
-## App Zone
+## 4️⃣ App Zone
 ### 4.1 Network Security Group
 `Name: nsg-app`
 ```text
@@ -131,7 +131,7 @@ This repository contains a comprehensive Azure landing zone design based on the 
 - Availability Set: as-app
 ```
 
-## Data Zone
+## 5️⃣ Data Zone
 ### 5.1 Network Security Group
 `Name: nsg-data`
 ```text
@@ -178,7 +178,7 @@ This repository contains a comprehensive Azure landing zone design based on the 
 - Availability Set: as-data
 ```
 
-## Management Zone
+## 6️⃣ Management Zone
 ### 6.1 Network Security Group
 `Name: nsg-mgmt`
 ```text
@@ -194,7 +194,7 @@ This repository contains a comprehensive Azure landing zone design based on the 
 - Domain: corp.internal
 ```
 
-## Site-to-Site VPN
+## 7️⃣ Site-to-Site VPN
 ### 7.1 Virtual Network Gateway
 `Name: azure-nw-gw`
 ```text
@@ -219,7 +219,7 @@ This repository contains a comprehensive Azure landing zone design based on the 
 - IKE Protocol: IKEv2
 ```
 
-## On-Premise
+## 8️⃣ On-Premise
 ### 8.1 RRAS VPN
 `Name: vpn-local-to-azure`
 ```text
@@ -245,7 +245,7 @@ This repository contains a comprehensive Azure landing zone design based on the 
 ## Maintainer
 
 **Chetniphat Varasai**  
-Cloud Engineer  
+Cloud Engineer
 
 ---
 
