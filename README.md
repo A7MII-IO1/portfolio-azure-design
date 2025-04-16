@@ -1,4 +1,4 @@
-# 🏗️ Azure Architecture Design
+# Azure Architecture Design
 ![Azure](https://img.shields.io/badge/Azure-Cloud-blue?logo=microsoft-azure)
 ![OpenAI](https://img.shields.io/badge/OpenAI-ChatGPT_4-10a37f?logo=openai&logoColor=white)
 ![Notion](https://img.shields.io/badge/Notion-Workspace-000000?logo=notion&logoColor=white)
