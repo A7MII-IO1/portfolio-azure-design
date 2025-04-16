@@ -10,7 +10,7 @@ This repository contains a comprehensive Azure landing zone design based on the 
 
 ---
 
-## 📚 Table of Contents
+## Table of Contents
 
 1. [Resource Group](#1️⃣-resource-group)
 2. [Virtual Network](#2️⃣-virtual-network)
