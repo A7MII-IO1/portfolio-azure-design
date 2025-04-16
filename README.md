@@ -1,4 +1,4 @@
-# 🏗️ Azure Architecture Design
+# Azure Architecture Design
 ![Azure](https://img.shields.io/badge/Azure-Cloud-blue?logo=microsoft-azure)
 ![OpenAI](https://img.shields.io/badge/OpenAI-ChatGPT_4-10a37f?logo=openai&logoColor=white)
 ![Notion](https://img.shields.io/badge/Notion-Workspace-000000?logo=notion&logoColor=white)
@@ -10,7 +10,7 @@ This repository contains a comprehensive Azure landing zone design based on the 
 
 ---
 
-## 📚 Table of Contents
+## Table of Contents
 
 1. [Resource Group](#1️⃣-resource-group)
 2. [Virtual Network](#2️⃣-virtual-network)
@@ -23,13 +23,13 @@ This repository contains a comprehensive Azure landing zone design based on the 
 
 ---
 
-## 1️⃣ Resource Group
+## Resource Group
 `Name: rg-azure`
 ```text
   - Region: Asia Pacific (Southeast Asia)
 ```
 
-## 2️⃣ Virtual Network
+## Virtual Network
 `Name: vnet-azure`
 ```text
   - Address Space: 192.168.0.0/16
@@ -42,8 +42,8 @@ This repository contains a comprehensive Azure landing zone design based on the 
   - DNS Servers: 10.0.1.1
 ```
 
-## 3️⃣ Web Zone
-### 🔐 3.1 Network Security Group
+## Web Zone
+### 3.1 Network Security Group
 `Name: nsg-web`
 ```text
 - Inbound Rules:
@@ -52,7 +52,7 @@ This repository contains a comprehensive Azure landing zone design based on the 
 - Associated Subnet: subnet-web
 ```
 
-### 🌐 3.2 Load Balancer
+### 3.2 Load Balancer
 `Name: lb-vmss-web`
 ```text
 - Type: Public (Static IP)
@@ -67,14 +67,14 @@ This repository contains a comprehensive Azure landing zone design based on the 
   • rdp-web2 → TCP/50002 → VM-WEB2 (3389)
 ```
 
-### 🧭 3.3 DNS Zone
+### 3.3 DNS Zone
 `Name: chetniphat.co`
 ```text
 - Region: Southeast Asia
 - Record Set: www.chetniphat.co → [public-ip-web]
 ```
 
-### ⚙️ 3.4 Virtual Machine Scale Set
+### 3.4 Virtual Machine Scale Set
 `Name: vmss-web`
 ```text
 - Image: WINS2019WEBIMAGE
@@ -87,7 +87,7 @@ This repository contains a comprehensive Azure landing zone design based on the 
 - Limits: min=1, max=2, default=0
 ```
 
-### 💻 3.5 Virtual Machines
+### 3.5 Virtual Machines
 `Name: VM-WEB1 & VM-WEB2`
 ```text
 - Size: Standard DS1 v2
@@ -96,14 +96,14 @@ This repository contains a comprehensive Azure landing zone design based on the 
 - Subnet: subnet-web
 ```
 
-## 4️⃣ App Zone
-### 🔐 4.1 Network Security Group
+## App Zone
+### 4.1 Network Security Group
 `Name: nsg-app`
 ```text
 - Subnet: subnet-app
 ```
 
-### 🌐 4.2 Load Balancer
+### 4.2 Load Balancer
 `Name: lb-vm-app`
 ```text
 - Type: Internal
@@ -113,7 +113,7 @@ This repository contains a comprehensive Azure landing zone design based on the 
 - Health Probe: TCP on app port
 ```
 
-### 🧱 4.3 Availability Set
+### 4.3 Availability Set
 `Name: as-app`
 ```text
 - Fault Domains: 2
@@ -121,7 +121,7 @@ This repository contains a comprehensive Azure landing zone design based on the 
 - VMs: VM-APP1, VM-APP2, VM-APP3
 ```
 
-### 💻 4.4 Virtual Machines
+### 4.4 Virtual Machines
 `Name: VM-APP1, VM-APP2 & VM-APP3`
 ```text
 - Image: Windows Server 2019
@@ -131,15 +131,15 @@ This repository contains a comprehensive Azure landing zone design based on the 
 - Availability Set: as-app
 ```
 
-## 5️⃣ Data Zone
-### 🔐 5.1 Network Security Group
+## Data Zone
+### 5.1 Network Security Group
 `Name: nsg-data`
 ```text
 - Allow SQL (1433) from 192.168.2.0/24
 - Subnet: subnet-data
 ```
 
-### 🌐 5.2 Load Balancer
+### 5.2 Load Balancer
 `Name: lb-vm-data`
 ```text
 - Type: Internal
@@ -149,7 +149,7 @@ This repository contains a comprehensive Azure landing zone design based on the 
 - Health Probe: TCP (1433)
 ```
 
-### 🧱 5.3 Availability Set
+### 5.3 Availability Set
 `Name: as-data`
 ```text
 - Fault Domains: 2
@@ -157,7 +157,7 @@ This repository contains a comprehensive Azure landing zone design based on the 
 - VMs: VM-DB1, VM-DB2, VM-SHARE
 ```
 
-### 📦 5.4 Storage Account
+### 5.4 Storage Account
 `Name: sa-azure`
 ```text
 - Performance: Premium
@@ -168,7 +168,7 @@ This repository contains a comprehensive Azure landing zone design based on the 
   • Connected to VM-SHARE (Z: Drive)
 ```
 
-### 💻 5.5 Virtual Machines
+### 5.5 Virtual Machines
 `Name: VM-DB1, VM-DB2 & VM-SHARE`
 ```text
 - Image: Windows Server 2019
@@ -178,14 +178,14 @@ This repository contains a comprehensive Azure landing zone design based on the 
 - Availability Set: as-data
 ```
 
-## 6️⃣ Management Zone
-### 🔐 6.1 Network Security Group
+## Management Zone
+### 6.1 Network Security Group
 `Name: nsg-mgmt`
 ```text
 - Subnet: subnet-mgmt
 ```
 
-### 💻 6.2 Virtual Machine
+### 6.2 Virtual Machine
 `Name: VM-DC2`
 ```text
 - Image: Windows Server 2019
@@ -194,22 +194,22 @@ This repository contains a comprehensive Azure landing zone design based on the 
 - Domain: corp.internal
 ```
 
-## 7️⃣ Site-to-Site VPN
-### 🌐 7.1 Virtual Network Gateway
+## Site-to-Site VPN
+### 7.1 Virtual Network Gateway
 `Name: azure-nw-gw`
 ```text
 - Subnet: GatewaySubnet (192.168.0.0/24)
 - Public IP: azure-vnet-gw-public-ip
 ```
 
-### 🌐 7.2 Local Network Gateway
+### 7.2 Local Network Gateway
 `Name: local-nw-gw`
 ```text
 - IP Address: [local public IP]
 - Address Space: 10.0.0.0/16
 ```
 
-### 🔗 7.3 VPN Connection
+### 7.3 VPN Connection
 `Name: vpn-azure-to-local`
 ```text
 - Type: Site-to-Site (IPSec)
@@ -219,8 +219,8 @@ This repository contains a comprehensive Azure landing zone design based on the 
 - IKE Protocol: IKEv2
 ```
 
-## 8️⃣ On-Premise
-### 🧩 8.1 RRAS VPN
+## On-Premise
+### 8.1 RRAS VPN
 `Name: vpn-local-to-azure`
 ```text
 - Type: VPN (IKEv2)
@@ -234,7 +234,7 @@ This repository contains a comprehensive Azure landing zone design based on the 
   • PSK: 1234
 ```
 
-### 💻 8.2 Virtual Machine
+### 8.2 Virtual Machine
 `Name: VM-DC1`
 ```text
 - Domain: corp.internal
@@ -242,7 +242,13 @@ This repository contains a comprehensive Azure landing zone design based on the 
 
 ---
 
-## 👨‍💻 Maintainer
+## Maintainer
 
 **Chetniphat Varasai**  
 Cloud Engineer  
+
+---
+
+## License
+
+**This project is All Rights Reserved.** You are not permitted to use, distribute, or modify the code without explicit permission from the author.
